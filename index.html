@@ -2,107 +2,261 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LOS VAGOS PANEL</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: #101010;
-      color: #f5d000;
-      font-family: Arial, sans-serif;
-    }
-    header {
-      padding: 28px 16px;
-      text-align: center;
-      background: #191919;
-      border-bottom: 2px solid #f5d000;
-    }
-    h1 { letter-spacing: 4px; }
-    main {
-      max-width: 650px;
-      margin: 35px auto;
-      padding: 0 16px;
-    }
-    .card {
-      background: #1b1b1b;
-      border: 1px solid #504500;
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 20px;
-    }
-    label {
-      display: block;
-      margin: 16px 0 8px;
-      color: white;
-    }
-    input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #555;
-      border-radius: 6px;
-      background: #101010;
-      color: white;
-    }
-    button {
-      margin-top: 20px;
-      padding: 13px 18px;
-      width: 100%;
-      border: 0;
-      border-radius: 6px;
-      background: #f5d000;
-      color: #111;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .muted { color: #aaa; line-height: 1.5; }
-    footer { text-align: center; color: #777; padding: 25px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LOS VAGOS PANEL</title>
+<style>
+:root{--y:#f5d000;--bg:#101010;--card:#1c1c1c;--line:#383838}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#f5f5f5;font:15px Arial,sans-serif}
+header{padding:25px 16px;text-align:center;background:#191700;border-bottom:1px solid #514600}
+header h1{margin:0;color:var(--y);letter-spacing:4px}
+header p{color:#aaa;margin-bottom:0}
+main{width:min(1050px,94%);margin:24px auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:18px}
+h2{margin-top:0;color:var(--y)}
+label{display:block;font-weight:bold;margin:12px 0 6px}
+input,select,textarea{width:100%;padding:12px;background:#101010;color:white;border:1px solid #444;border-radius:7px}
+textarea{min-height:80px}
+button{background:var(--y);color:#111;border:0;padding:12px 16px;border-radius:7px;font-weight:bold;cursor:pointer;margin:8px 5px 0 0}
+button.secondary{background:#333;color:white}
+button.danger{background:#812626;color:white}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+nav button{margin:0}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th,td{padding:10px;border-bottom:1px solid #383838;text-align:left;vertical-align:top}
+th{color:var(--y)}
+.tablewrap{overflow:auto}
+.muted{color:#aaa;font-size:13px}
+.hidden{display:none!important}
+#message{padding:12px;border-radius:8px;margin:12px 0;background:#292929}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.card{padding:15px}}
+</style>
 </head>
 <body>
-  <header>
-    <h1>LOS VAGOS</h1>
-    <p>OFFICIAL FAMILY PANEL</p>
-  </header>
+<header>
+  <h1>LOS VAGOS</h1>
+  <p>MEMBERS · LEAVES · RESIGNATIONS</p>
+</header>
+<main>
+  <div id="message">Conectează-te pentru a deschide panelul.</div>
 
-  <main>
-    <section class="card">
-      <h2>Recruitment</h2>
-      <p class="muted">
-        Completează formularul pentru a solicita intrarea în familia Los Vagos.
-      </p>
-      <p class="muted">
-        Autentificarea Discord și salvarea recrutărilor vor fi conectate după configurarea securității.
-      </p>
-      <form id="recruitment">
-        <label for="gameName">Numele în joc</label>
-        <input id="gameName" required maxlength="60"
-          placeholder="Numele tău din FiveM">
+  <section class="card" id="auth">
+    <h2>Autentificare</h2>
+    <label>Email</label>
+    <input id="email" type="email" autocomplete="email" placeholder="email@example.com">
+    <label>Parolă</label>
+    <input id="password" type="password" autocomplete="current-password" placeholder="Parola contului">
+    <label>Nume afișat (doar pentru cont nou)</label>
+    <input id="displayName" placeholder="Numele tău">
+    <button id="login">Intră în panel</button>
+    <button id="signup" class="secondary">Creează cont</button>
+    <p class="muted">Folosește un cont propriu. Dacă Supabase cere confirmarea emailului, confirmă-l înainte să te conectezi.</p>
+  </section>
 
-        <label for="discordId">Discord ID</label>
-        <input id="discordId" required maxlength="30"
-          placeholder="ID-ul tău Discord">
+  <section id="app" class="hidden">
+    <div class="card">
+      <div id="who"></div>
+      <nav>
+        <button data-tab="new">Cerere nouă</button>
+        <button data-tab="mine">Cererile mele</button>
+        <button data-tab="manage" id="manageTab" class="hidden">Gestionează cereri</button>
+        <button data-tab="roles" id="rolesTab" class="hidden">Grade membri</button>
+        <button id="logout" class="secondary">Ieșire</button>
+      </nav>
+    </div>
 
-        <label for="recruiter">Cine te-a adus în Los Vagos?</label>
-        <input id="recruiter" required maxlength="60"
-          placeholder="Numele recrutorului">
-
-        <button type="submit">TRIMITE RECRUTAREA</button>
-        <p id="message" class="muted" aria-live="polite"></p>
+    <section class="card tab" id="tab-new">
+      <h2>Creează cerere</h2>
+      <form id="requestForm">
+        <label>Tipul cererii</label>
+        <select id="kind">
+          <option value="leave">Învoire</option>
+          <option value="resignation">Demisie</option>
+        </select>
+        <div class="grid">
+          <div><label>Nume în FiveM</label><input id="playerName" required maxlength="80"></div>
+          <div><label>ID în joc</label><input id="gameId" required maxlength="30"></div>
+        </div>
+        <label>Durată învoire (ex.: 3 zile / 2 ore)</label>
+        <input id="duration" placeholder="Completează pentru învoire">
+        <div class="grid">
+          <div><label>Data de început</label><input id="startDate" type="date"></div>
+          <div><label>Data de sfârșit</label><input id="endDate" type="date"></div>
+        </div>
+        <label>Motivul cererii</label>
+        <textarea id="reason" required maxlength="1500" placeholder="Scrie motivul..."></textarea>
+        <button type="submit">Trimite cererea</button>
       </form>
     </section>
-  </main>
 
-  <footer>LOS VAGOS © 2026</footer>
+    <section class="card tab hidden" id="tab-mine">
+      <h2>Cererile mele</h2>
+      <div id="mineList"></div>
+    </section>
 
-  <script>
-    document.getElementById("recruitment").addEventListener("submit", function(event) {
-      event.preventDefault();
-      document.getElementById("message").textContent =
-        "Formularul este pregătit vizual. Conectarea la baza de date nu este încă activă.";
+    <section class="card tab hidden" id="tab-manage">
+      <h2>Gestionare cereri</h2>
+      <p class="muted">Disponibil pentru Owner, Lider și Co-Lider.</p>
+      <button id="refreshRequests" class="secondary">Reîncarcă</button>
+      <div id="allRequests" class="tablewrap"></div>
+    </section>
+
+    <section class="card tab hidden" id="tab-roles">
+      <h2>Grade membri</h2>
+      <p class="muted">Doar Owner-ul poate schimba gradele. Membrii trebuie să-și creeze cont înainte să apară aici.</p>
+      <button id="refreshProfiles" class="secondary">Reîncarcă membrii</button>
+      <div id="profilesList" class="tablewrap"></div>
+    </section>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* COMPLETEAZĂ CU PROJECT URL ȘI PUBLISHABLE/ANON KEY DIN SUPABASE.
+   NU pune niciodată service_role/secret key în acest fișier. */
+const SUPABASE_URL = "PUNE_AICI_PROJECT_URL";
+const SUPABASE_KEY = "PUNE_AICI_PUBLISHABLE_SAU_ANON_KEY";
+
+const message = document.getElementById("message");
+const authBox = document.getElementById("auth");
+const app = document.getElementById("app");
+let db = null;
+let currentUser = null;
+let profile = null;
+
+const el = id => document.getElementById(id);
+const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, c => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+const say = text => { message.textContent = text; };
+const isManager = () => profile && ["owner","leader","coleader"].includes(profile.role);
+const roleName = role => ({
+  owner:"Owner", leader:"Lider", coleader:"Co-Lider", member:"Membru"
+}[role] || role);
+const statusName = status => ({
+  pending:"În așteptare", approved:"Acceptată", rejected:"Respinsă"
+}[status] || status);
+const kindName = kind => kind === "leave" ? "Învoire" : "Demisie";
+
+function setupClient(){
+  if(!window.supabase) throw new Error("Biblioteca Supabase nu s-a încărcat.");
+  if(SUPABASE_URL.startsWith("PUNE_AICI") || SUPABASE_KEY.startsWith("PUNE_AICI"))
+    throw new Error("Completează SUPABASE_URL și SUPABASE_KEY în cod.");
+  db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+}
+function showTab(name){
+  document.querySelectorAll(".tab").forEach(node => node.classList.add("hidden"));
+  el("tab-"+name).classList.remove("hidden");
+  if(name==="mine") loadMine();
+  if(name==="manage") loadAllRequests();
+  if(name==="roles") loadProfiles();
+}
+document.querySelectorAll("[data-tab]").forEach(btn =>
+  btn.addEventListener("click", () => showTab(btn.dataset.tab))
+);
+
+async function loadSession(){
+  try {
+    setupClient();
+    const {data:{session}, error} = await db.auth.getSession();
+    if(error) throw error;
+    if(session) await enterPanel(session.user);
+  } catch(e) { say("Eroare: " + e.message); }
+}
+async function enterPanel(user){
+  currentUser = user;
+  const {data, error} = await db.from("profiles")
+    .select("id,email,display_name,role").eq("id",user.id).single();
+  if(error) {
+    say("Nu am putut încărca profilul. Verifică SQL-ul și confirmarea contului: "+error.message);
+    return;
+  }
+  profile = data;
+  authBox.classList.add("hidden");
+  app.classList.remove("hidden");
+  el("who").textContent =
+    (profile.display_name || profile.email || "Membru") + " · " + roleName(profile.role);
+  el("manageTab").classList.toggle("hidden", !isManager());
+  el("rolesTab").classList.toggle("hidden", profile.role !== "owner");
+  say("Conectat cu succes.");
+  showTab("new");
+}
+el("login").addEventListener("click", async () => {
+  try {
+    setupClient();
+    const {data,error} = await db.auth.signInWithPassword({
+      email:el("email").value.trim(), password:el("password").value
     });
-  </script>
-</body>
-</html>
+    if(error) throw error;
+    await enterPanel(data.user);
+  } catch(e) { say("Autentificare eșuată: "+e.message); }
+});
+el("signup").addEventListener("click", async () => {
+  try {
+    setupClient();
+    const email = el("email").value.trim();
+    const password = el("password").value;
+    const displayName = el("displayName").value.trim();
+    if(!email || password.length < 6) {
+      say("Introdu emailul și o parolă de cel puțin 6 caractere.");
+      return;
+    }
+    const {data,error} = await db.auth.signUp({
+      email, password, options:{data:{display_name:displayName}}
+    });
+    if(error) throw error;
+    if(data.session) await enterPanel(data.user);
+    else say("Cont creat. Verifică emailul pentru confirmare, apoi conectează-te.");
+  } catch(e) { say("Înregistrare eșuată: "+e.message); }
+});
+el("logout").addEventListener("click", async () => {
+  if(db) await db.auth.signOut();
+  currentUser = null; profile = null;
+  app.classList.add("hidden"); authBox.classList.remove("hidden");
+  say("Ai ieșit din panel.");
+});
 
+el("requestForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  if(!currentUser) return say("Conectează-te mai întâi.");
+  const kind = el("kind").value;
+  const duration = el("duration").value.trim();
+  const startDate = el("startDate").value || null;
+  const endDate = el("endDate").value || null;
+  if(kind==="leave" && !duration && !startDate && !endDate)
+    return say("Pentru învoire, completează durata sau datele.");
+  if(startDate && endDate && endDate < startDate)
+    return say("Data de sfârșit nu poate fi înainte de data de început.");
+  const {error} = await db.from("panel_requests").insert({
+    user_id:currentUser.id, kind,
+    player_name:el("playerName").value.trim(),
+    game_id:el("gameId").value.trim(),
+    duration, start_date:startDate, end_date:endDate,
+    reason:el("reason").value.trim()
+  });
+  if(error) return say("Cererea nu a fost trimisă: "+error.message);
+  el("requestForm").reset();
+  say("Cerere trimisă cu succes!");
+  showTab("mine");
+});
+
+function requestRows(rows, manager=false){
+  if(!rows.length) return "<p>Nu există cereri.</p>";
+  return `<table><thead><tr><th>Tip / Membru</th><th>ID joc</th><th>Durată / Date</th><th>Motiv</th><th>Status</th>${manager?"<th>Acțiune</th>":""}</tr></thead><tbody>`+
+  rows.map(r=>`<tr>
+    <td>${escapeHTML(kindName(r.kind))}<br>${escapeHTML(r.player_name)}<br><span class="muted">${escapeHTML(r.created_at?.slice(0,10))}</span></td>
+    <td>${escapeHTML(r.game_id)}</td>
+    <td>${escapeHTML(r.duration || "-")}<br>${escapeHTML(r.start_date || "-")} – ${escapeHTML(r.end_date || "-")}</td>
+    <td>${escapeHTML(r.reason)}</td>
+    <td>${escapeHTML(statusName(r.status))}</td>
+    ${manager?`<td><select id="status-${r.id}">
+      <option value="pending" ${r.status==="pending"?"selected":""}>În așteptare</option>
+      <option value="approved" ${r.status==="approved"?"selected":""}>Acceptată</option>
+      <option value="rejected" ${r.status==="rejected"?"selected":""}>Respinsă</option>
+    </select><button onclick="updateRequest('${r.id}')">Salvează</button></td>`:""}
+  </tr>`).join("")+"</tbody></table>";
+}
+async function loadMine(){
+  const {data,error} = await db.from("panel
