@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LOS VAGOS PANEL</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #101010;
+      color: #f5d000;
+      font-family: Arial, sans-serif;
+    }
+    header {
+      padding: 28px 16px;
+      text-align: center;
+      background: #191919;
+      border-bottom: 2px solid #f5d000;
+    }
+    h1 { letter-spacing: 4px; }
+    main {
+      max-width: 650px;
+      margin: 35px auto;
+      padding: 0 16px;
+    }
+    .card {
+      background: #1b1b1b;
+      border: 1px solid #504500;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin: 16px 0 8px;
+      color: white;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #555;
+      border-radius: 6px;
+      background: #101010;
+      color: white;
+    }
+    button {
+      margin-top: 20px;
+      padding: 13px 18px;
+      width: 100%;
+      border: 0;
+      border-radius: 6px;
+      background: #f5d000;
+      color: #111;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .muted { color: #aaa; line-height: 1.5; }
+    footer { text-align: center; color: #777; padding: 25px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>LOS VAGOS</h1>
+    <p>OFFICIAL FAMILY PANEL</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Recruitment</h2>
+      <p class="muted">
+        Completează formularul pentru a solicita intrarea în familia Los Vagos.
+      </p>
+      <p class="muted">
+        Autentificarea Discord și salvarea recrutărilor vor fi conectate după configurarea securității.
+      </p>
+      <form id="recruitment">
+        <label for="gameName">Numele în joc</label>
+        <input id="gameName" required maxlength="60"
+          placeholder="Numele tău din FiveM">
+
+        <label for="discordId">Discord ID</label>
+        <input id="discordId" required maxlength="30"
+          placeholder="ID-ul tău Discord">
+
+        <label for="recruiter">Cine te-a adus în Los Vagos?</label>
+        <input id="recruiter" required maxlength="60"
+          placeholder="Numele recrutorului">
+
+        <button type="submit">TRIMITE RECRUTAREA</button>
+        <p id="message" class="muted" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <footer>LOS VAGOS © 2026</footer>
+
+  <script>
+    document.getElementById("recruitment").addEventListener("submit", function(event) {
+      event.preventDefault();
+      document.getElementById("message").textContent =
+        "Formularul este pregătit vizual. Conectarea la baza de date nu este încă activă.";
+    });
+  </script>
+</body>
+</html>
+
